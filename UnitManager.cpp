@@ -54,33 +54,39 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
         }
     }
 
-    if (pge->GetKey(olc::LEFT).bPressed) {
+    // This provides input, useful for player's interaction
+    if (pge->GetKey(olc::LEFT).bPressed || pge->GetKey(olc::A).bPressed) {
         for (auto it = units.begin(); it != units.end();) {
-            if ((*it)->id == Static || (*it)->id == Kinematic) {
+            if ((*it)->id == Static || (*it)->id == Kinematic || (*it)->id == Gravity) {
                 (*it)->velocity = { -(*it)->speed, 0.0f };
             }
             it++;
         }
     }
-    else if (pge->GetKey(olc::RIGHT).bPressed) {
+    else if (pge->GetKey(olc::RIGHT).bPressed || pge->GetKey(olc::D).bPressed) {
         for (auto it = units.begin(); it != units.end();) {
-            if ((*it)->id == Static || (*it)->id == Kinematic) {
+            if ((*it)->id == Static || (*it)->id == Kinematic || (*it)->id == Gravity) {
                 (*it)->velocity = { (*it)->speed, 0.0f };
             }
             it++;
         }
     }
-    else if (pge->GetKey(olc::UP).bPressed) {
+    else if (pge->GetKey(olc::UP).bPressed || pge->GetKey(olc::W).bPressed) {
         for (auto it = units.begin(); it != units.end();) {
-            if ((*it)->id == Static || (*it)->id == Kinematic) {
-                (*it)->velocity = { 0.0f, -(*it)->speed };
+            if ((*it)->id == Static || (*it)->id == Kinematic || (*it)->id == Gravity) {
+                if ((*it)->is_gravity) {
+                    (*it)->velocity.y = -3.0f;
+                }
+                else {
+                    (*it)->velocity = { 0.0f, -(*it)->speed };
+                }
             }
             it++;
         }
     }
-    else if (pge->GetKey(olc::DOWN).bPressed) {
+    else if (pge->GetKey(olc::DOWN).bPressed || pge->GetKey(olc::S).bPressed) {
         for (auto it = units.begin(); it != units.end();) {
-            if ((*it)->id == Static || (*it)->id == Kinematic) {
+            if ((*it)->id == Static || (*it)->id == Kinematic || (*it)->id == Gravity) {
                 (*it)->velocity = { 0.0f, (*it)->speed };
             }
             it++;
@@ -96,7 +102,7 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
         SetUnit(index.x, index.y, '.');
     }
 
-    if (pge->GetKey(olc::A).bPressed) {
+    if (pge->GetKey(olc::Z).bPressed) {
         level.clear();
         level.resize(level_size.x * level_size.y, '.');
     }
@@ -109,7 +115,7 @@ void UnitManager::Logic(float dt) {
     for (auto it = units.begin(); it != units.end();) {
         (*it)->Move(dt);
 
-        if (!(*it)->is_connect && (*it)->id == Static) {
+        if (!(*it)->is_connect && ((*it)->id == Static || (*it)->id == Gravity)) {
             (*it)->is_value = false;
         }
 
@@ -117,7 +123,8 @@ void UnitManager::Logic(float dt) {
         (*it)->unit_index.y = (*it)->pos.y / pixel_size;
 
         if ((*it)->is_gravity) {
-            (*it)->pos.y += (*it)->g_speed;
+            (*it)->velocity.y += (*it)->g_speed;
+            (*it)->velocity.y = std::fminf((*it)->velocity.y, (*it)->g_max);
         }
 
         for (auto it2 = units.begin(); it2 != units.end(); it2++) {
@@ -175,13 +182,13 @@ void UnitManager::InitializeUnits() {
                 }
             case '3': {
                 WallUnit* w = new WallUnit;
-                w->Initialize(Wall, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 10, 0 }, false, { x, y });
+                w->Initialize(Wall, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0, 0 }, false, { x, y });
                 units.push_back(w);
                 break;
                 }
             case '4': {
                 GravityUnit* g = new GravityUnit;
-                g->Initialize(Gravity, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0, 0 }, false, { x, y });
+                g->Initialize(Gravity, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0.1f, 0 }, false, { x, y });
                 units.push_back(g);
                 }
                 break;

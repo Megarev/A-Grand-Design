@@ -6,7 +6,8 @@ Unit::Unit() {
     is_value = true;
 
     speed = 0.1f;
-    g_speed = 0.5f;
+    g_speed = 0.2f;
+    g_max = 0.4f;
 
     is_connect_index = 0;
     connect_max = 5;

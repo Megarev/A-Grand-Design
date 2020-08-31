@@ -4,8 +4,11 @@ UnitRenderer::UnitRenderer() {}
 
 UnitRenderer::UnitRenderer(const olc::vi2d& size, UnitManager* mgr, olc::PixelGameEngine* p)
     : pge(p), unit_mgr(mgr), level_size(size) {
-    psize = 10;
+    psize = 20;
     angle = 0.0f;
+
+    units = new olc::Sprite("files/images/Tileset.png");
+    units_decal = new olc::Decal(units);
 
     model = {
         { 0.0f, 0.0f },
@@ -45,28 +48,35 @@ void UnitRenderer::PreviewRender() {
         for (int j = 0; j < level_size.x; j++) {
             switch (unit_mgr->GetUnit(j, i)) {
             case '0':
-                pge->FillRect(j * psize, i * psize, psize, psize, olc::GREEN);
+                //pge->FillRect(j * psize, i * psize, psize, psize, olc::GREEN);
+                pge->DrawPartialSprite(j * psize, i * psize, units, 0, 0, psize, psize);
                 break;
             case '1':
-                pge->FillRect(j * psize, i * psize, psize, psize, olc::GREY);
+                //pge->FillRect(j * psize, i * psize, psize, psize, olc::GREY);
+                pge->DrawPartialSprite(j * psize, i * psize, units, psize, 0, psize, psize);
                 break;
             case '2':
-                pge->FillRect(j * psize, i * psize, psize, psize, olc::CYAN);
+                //pge->FillRect(j * psize, i * psize, psize, psize, olc::CYAN);
+                pge->DrawPartialSprite(j * psize, i * psize, units, 2 * psize, 0, psize, psize);
                 break;
             case '3':
-                pge->FillRect(j * psize, i * psize, psize, psize, olc::YELLOW);
+                //pge->FillRect(j * psize, i * psize, psize, psize, olc::YELLOW);
+                pge->DrawPartialSprite(j * psize, i * psize, units, 3 * psize, 0, psize, psize);
                 break;
             case '4':
-                pge->FillRect(j * psize, i * psize, psize, psize, olc::BLUE);
+                //pge->FillRect(j * psize, i * psize, psize, psize, olc::BLUE);
+                pge->DrawPartialSprite(j * psize, i * psize, units, 4 * psize, 0, psize, psize);
                 break;
             case '.':
-                pge->FillRect(j * psize, i * psize, psize, psize, olc::BLACK);
+                continue;
+                //pge->FillRect(j * psize, i * psize, psize, psize, olc::BLACK);
                 break;
             }
         }
     }
 
-    pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
+    //pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
+    pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
 }
 
 void UnitRenderer::PlayRender() {
@@ -75,14 +85,27 @@ void UnitRenderer::PlayRender() {
     for (auto& a : unit_mgr->GetUnits()) {
         switch (a->id) {
         case 0:
-        case 2:
-        case 3:
-        case 4:
-            pge->FillRect(a->pos, a->size, a->color);
+            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 0, 0, psize, psize);
             break;
         case 1:
-            FillRotateRect(model, angle, a->pos + olc::vf2d(5.0f, 0.0f), { -psize / 2.0f, -psize / 2.0f }, a->color);
+            //FillRotateRect(model, angle, a->pos + olc::vf2d(5.0f, 0.0f), { -psize / 2.0f, -psize / 2.0f }, a->color);
+            pge->DrawPartialRotatedDecal(olc::vf2d(a->pos.x + psize / 2.0f, a->pos.y), units_decal, angle, { psize / 2.0f, psize / 2.0f }, { (float)psize, 0.0f }, { (float)psize, (float)psize });
+            break;
+        case 2:
+            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 2 * psize, 0, psize, psize);
+            break;
+        case 3:
+            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 3 * psize, 0, psize, psize);
+            break;
+        case 4:
+            //pge->FillRect(a->pos, a->size, a->color);
+            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 4 * psize, 0, psize, psize);
             break;
         }
     }
+}
+
+void UnitRenderer::Clear() {
+    delete units_decal;
+    delete units;
 }

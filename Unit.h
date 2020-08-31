@@ -5,7 +5,7 @@ class Unit {
 public:
     olc::vf2d pos, velocity;
     olc::vi2d size, unit_index;
-    float speed, g_speed;
+    float speed, g_speed, g_max;
     bool is_connect; // Is the given unit connected to other unit
     olc::Pixel color;
     int id, is_connect_index, connect_max;

@@ -6,5 +6,6 @@ GravityUnit::GravityUnit() {
 }
 
 void GravityUnit::Move(float dt) {
-	if (is_connect) pos.x += speed;
+	if (is_connect) pos.x += velocity.x;
+	if (is_gravity) pos.y += velocity.y;
 }

@@ -23,8 +23,10 @@ public:
         
         active_mode = Editor;
 
-        level_size = { 20, 20 };
-        unit_mgr = UnitManager(level_size, 10);
+        int pixel_size = 20;
+
+        level_size = { ScreenWidth() / pixel_size, ScreenHeight() / pixel_size };
+        unit_mgr = UnitManager(level_size, pixel_size);
         unit_renderer = UnitRenderer(level_size, &unit_mgr, this);
 
         return true;
@@ -66,6 +68,7 @@ public:
 
     bool OnUserDestroy() override {
         unit_mgr.Clear();
+        unit_renderer.Clear();
     
         return true;
     }
@@ -74,7 +77,7 @@ public:
 int main() {
 
     Game game;
-    if (game.Construct(200, 200, 2, 2)) {
+    if (game.Construct(600, 300, 2, 2)) {
         game.Start();
     }
 

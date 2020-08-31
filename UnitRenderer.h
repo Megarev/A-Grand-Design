@@ -8,6 +8,11 @@ private:
     float angle;
 
     std::vector<olc::vf2d> model;
+
+    // Sprite and Decal
+    olc::Sprite* units = nullptr;
+    olc::Decal* units_decal = nullptr;
+
     olc::Pixel colors[5] = { olc::GREEN, olc::WHITE, olc::CYAN, olc::YELLOW, olc::BLUE };
 
     olc::PixelGameEngine* pge;
@@ -22,4 +27,6 @@ public:
 
     void PreviewRender();
     void PlayRender();
+
+    void Clear();
 };
