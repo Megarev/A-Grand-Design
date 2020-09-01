@@ -6,12 +6,13 @@
 #include "RotatorUnit.h"
 #include "WallUnit.h"
 #include "GravityUnit.h"
+#include "GeneratorUnit.h"
 #include "ParticleSystem.h"
 
 class UnitManager {
 private:
 	std::string level;
-	std::vector<Unit*> units;
+	std::vector<Unit*> units, units_generated; // For generator unit only
 	std::unique_ptr<ParticleSystem> p_system;
 	int n_selected_unit;
 
@@ -20,11 +21,12 @@ private:
 		Kinematic,
 		Rotator,
 		Wall,
-		Gravity
+		Gravity,
+		Generator
 	};
 
 	olc::vi2d level_size;
-	int pixel_size;
+	int pixel_size, n_units;
 public:
 	UnitManager();
 	UnitManager(const olc::vi2d& size, int psize);

@@ -38,6 +38,7 @@ UnitManager::UnitManager(const olc::vi2d& size, int psize)
     p_system = std::make_unique<CircleParticleSystem>();
 	level.resize(level_size.x * level_size.y, '.');
 
+    n_units = 5;
     n_selected_unit = 0;
 }
 
@@ -51,6 +52,7 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
         case Rotator: SetUnit(index.x, index.y, '2'); break;
         case Wall: SetUnit(index.x, index.y, '3'); break;
         case Gravity: SetUnit(index.x, index.y, '4'); break;
+        case Generator: SetUnit(index.x, index.y, '5'); break;
         }
     }
 
@@ -95,7 +97,7 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
 
     if (pge->GetMouseWheel() > 0) n_selected_unit++;
     if (pge->GetMouseWheel() < 0) n_selected_unit--;
-    if (n_selected_unit > 4) n_selected_unit = 4;
+    if (n_selected_unit > n_units) n_selected_unit = n_units;
     if (n_selected_unit < 0) n_selected_unit = 0;
 
     if (pge->GetMouse(1).bHeld) {
@@ -105,6 +107,10 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
     if (pge->GetKey(olc::Z).bPressed) {
         level.clear();
         level.resize(level_size.x * level_size.y, '.');
+    }
+
+    if (pge->GetKey(olc::Q).bPressed) {
+        std::cout << "Unit count : " << units.size() << std::endl;
     }
 }
 
@@ -129,6 +135,7 @@ void UnitManager::Logic(float dt) {
 
         for (auto it2 = units.begin(); it2 != units.end(); it2++) {
             if ((*it2)->is_value && it != it2) {
+
                 if ((*it)->Intersects((*it2)->pos) && !(*it)->is_connect) {
                     if ((*it)->id == Wall) {
                         (*it)->is_value = false;
@@ -148,12 +155,34 @@ void UnitManager::Logic(float dt) {
             }
         }
 
+        if ((*it)->id == Generator) {
+            if ((*it)->is_generate) {
+                if (GetUnitAtIndex((*it)->unit_index.x, (*it)->unit_index.y - 1) == nullptr) {
+                    Unit* u = GetUnitAtIndex((*it)->unit_index.x, (*it)->unit_index.y + 1);
+                    if (u != nullptr && u->id == Static) {
+                        Unit* u_cpy = new StaticUnit;
+                        u_cpy->Initialize(Static, { u->pos.x, u->pos.y - 2 * pixel_size }, { pixel_size, pixel_size }, { 0.0f, 0.0f }, true, { u->unit_index.x, u->unit_index.y - 2 });
+
+                        (*it)->is_generate = false;
+                        units_generated.push_back(u_cpy);
+                    }
+                }
+            }
+        }
+
         if (!(*it)->is_value) {
             it = units.erase(it);
         }
         else {
             it++;
         }
+    }
+
+    if (!units_generated.empty()) {
+        for (auto it = units_generated.begin(); it != units_generated.end(); it++) {
+            units.push_back(*it);
+        }
+        units_generated.clear();
     }
 }
 
@@ -192,6 +221,12 @@ void UnitManager::InitializeUnits() {
                 units.push_back(g);
                 }
                 break;
+            case '5': {
+                GeneratorUnit* u = new GeneratorUnit;
+                u->Initialize(Generator, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0, 0 }, true, { x, y });
+                units.push_back(u);
+                }
+                break;
             }
         }
     }
@@ -228,7 +263,8 @@ void UnitManager::InitializeUnits() {
             case '1': {
                     Unit* u = GetUnitAtIndex(x, y);
                     if (u != nullptr) {
-                        if (GetUnitAtIndex(x, y - 1)->is_gravity) u->is_gravity = true;
+                        Unit* u2 = GetUnitAtIndex(x, y - 1);
+                        if (u2 != nullptr && u2->is_gravity) u->is_gravity = true;
                     }
                 }
                 break;

@@ -4,6 +4,7 @@ Unit::Unit() {
 	is_connect = false;
     is_gravity = false;
     is_value = true;
+    is_generate = false;
 
     speed = 0.1f;
     g_speed = 0.2f;

@@ -10,10 +10,6 @@ private:
     olc::vi2d level_size;
     UnitManager unit_mgr;
     UnitRenderer unit_renderer;
-
-    olc::Pixel colors[4] = { olc::GREEN, olc::WHITE, olc::CYAN, olc::YELLOW };
-
-    std::vector<olc::vf2d> model;
 public:
     Game() {
         sAppName = "A Grand Design";
@@ -77,7 +73,7 @@ public:
 int main() {
 
     Game game;
-    if (game.Construct(600, 300, 2, 2)) {
+    if (game.Construct(600, 300, 2, 2, false, true)) {
         game.Start();
     }
 

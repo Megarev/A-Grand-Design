@@ -10,6 +10,7 @@ public:
     olc::Pixel color;
     int id, is_connect_index, connect_max;
     bool is_value, is_gravity;
+    bool is_generate; // Used only for the generator tile
 
     Unit();
 

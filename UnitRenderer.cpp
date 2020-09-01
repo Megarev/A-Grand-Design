@@ -67,6 +67,9 @@ void UnitRenderer::PreviewRender() {
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::BLUE);
                 pge->DrawPartialSprite(j * psize, i * psize, units, 4 * psize, 0, psize, psize);
                 break;
+            case '5':
+                pge->DrawPartialSprite(j * psize, i * psize, units, 5 * psize, 0, psize, psize);
+                break;
             case '.':
                 continue;
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::BLACK);
@@ -100,6 +103,9 @@ void UnitRenderer::PlayRender() {
         case 4:
             //pge->FillRect(a->pos, a->size, a->color);
             pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 4 * psize, 0, psize, psize);
+            break;
+        case 5:
+            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 5 * psize, 0, psize, psize);
             break;
         }
     }
