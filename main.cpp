@@ -10,6 +10,7 @@ private:
     olc::vi2d level_size;
     UnitManager unit_mgr;
     UnitRenderer unit_renderer;
+    GUI gui;
 public:
     Game() {
         sAppName = "A Grand Design";
@@ -24,6 +25,8 @@ public:
         level_size = { ScreenWidth() / pixel_size, ScreenHeight() / pixel_size };
         unit_mgr = UnitManager(level_size, pixel_size);
         unit_renderer = UnitRenderer(level_size, &unit_mgr, this);
+
+        gui.SetSpriteSheet(unit_renderer.GetSprite());
 
         return true;
     }
@@ -47,10 +50,12 @@ public:
         unit_mgr.Input(this, mouse_pos);
 
         // Logic
-        unit_mgr.Logic(dt);
+        gui.Logic(this);
+        unit_mgr.Logic(gui.GetSelectedIndex(), dt);
 
         // Render
         Clear(olc::BLACK);
+
         unit_mgr.RenderParticles(this);
 
         if (active_mode == Editor) {
@@ -59,12 +64,15 @@ public:
         else if (active_mode == Play) {
             unit_renderer.PlayRender();
         }
+        gui.Render(this);
+        
         return true;
     }
 
     bool OnUserDestroy() override {
         unit_mgr.Clear();
         unit_renderer.Clear();
+        gui.Clear();
     
         return true;
     }
@@ -73,7 +81,7 @@ public:
 int main() {
 
     Game game;
-    if (game.Construct(600, 300, 2, 2, false, true)) {
+    if (game.Construct(600, 300, 2, 2)) {
         game.Start();
     }
 

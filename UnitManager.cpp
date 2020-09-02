@@ -46,13 +46,15 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
     olc::vi2d index = mouse_pos / pixel_size;
 
     if (pge->GetMouse(0).bHeld) {
-        switch (n_selected_unit) {
-        case Static: SetUnit(index.x, index.y, '0'); break;
-        case Kinematic: SetUnit(index.x, index.y, '1'); break;
-        case Rotator: SetUnit(index.x, index.y, '2'); break;
-        case Wall: SetUnit(index.x, index.y, '3'); break;
-        case Gravity: SetUnit(index.x, index.y, '4'); break;
-        case Generator: SetUnit(index.x, index.y, '5'); break;
+        if (index.x > 0 && index.y > 0 && index.x < level_size.x - 1 && index.y < level_size.y - 1) {
+            switch (n_selected_unit) {
+            case Static: SetUnit(index.x, index.y, '0'); break;
+            case Kinematic: SetUnit(index.x, index.y, '1'); break;
+            case Rotator: SetUnit(index.x, index.y, '2'); break;
+            case Wall: SetUnit(index.x, index.y, '3'); break;
+            case Gravity: SetUnit(index.x, index.y, '4'); break;
+            case Generator: SetUnit(index.x, index.y, '5'); break;
+            }
         }
     }
 
@@ -95,11 +97,6 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
         }
     }
 
-    if (pge->GetMouseWheel() > 0) n_selected_unit++;
-    if (pge->GetMouseWheel() < 0) n_selected_unit--;
-    if (n_selected_unit > n_units) n_selected_unit = n_units;
-    if (n_selected_unit < 0) n_selected_unit = 0;
-
     if (pge->GetMouse(1).bHeld) {
         SetUnit(index.x, index.y, '.');
     }
@@ -114,10 +111,11 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
     }
 }
 
-void UnitManager::Logic(float dt) {
+void UnitManager::Logic(int unit, float dt) {
     
+    n_selected_unit = unit;
     p_system->Update(dt);
-
+    
     for (auto it = units.begin(); it != units.end();) {
         (*it)->Move(dt);
 
@@ -147,7 +145,6 @@ void UnitManager::Logic(float dt) {
                         if (u != nullptr) {
                             if (u->id == Kinematic) {
                                 u->velocity.x = -u->velocity.x;
-                                u->velocity.y = -u->velocity.y;
                             }
                         }
                     }
@@ -308,7 +305,8 @@ void UnitManager::InitializeUnits() {
             case '1': {
                 Unit* u = GetUnitAtIndex(x, y);
                 if (u != nullptr) {
-                    if (GetUnitAtIndex(x, y - 1)->is_gravity) u->is_gravity = true;
+                    Unit* u2 = GetUnitAtIndex(x, y - 1);
+                    if (u2 != nullptr && u2->is_gravity) u->is_gravity = true;
                 }
             }
                     break;

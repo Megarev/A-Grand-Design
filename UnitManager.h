@@ -35,7 +35,7 @@ public:
 	void InitializeUnits();
 
 	void Clear();
-	void Logic(float dt);
+	void Logic(int unit, float dt);
 
 	char GetUnit(int x, int y) const;
 	void SetUnit(int x, int y, char c);

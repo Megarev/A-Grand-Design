@@ -6,6 +6,7 @@ UnitRenderer::UnitRenderer(const olc::vi2d& size, UnitManager* mgr, olc::PixelGa
     : pge(p), unit_mgr(mgr), level_size(size) {
     psize = 20;
     angle = 0.0f;
+    n_units = 6;
 
     units = new olc::Sprite("files/images/Tileset.png");
     units_decal = new olc::Decal(units);
@@ -79,7 +80,10 @@ void UnitRenderer::PreviewRender() {
     }
 
     //pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
-    pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
+    //pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
+    for (int i = 0; i < n_units; i++) {
+        pge->DrawPartialSprite(1, i * psize + 1, units, i * psize, 0, psize, psize);
+    }
 }
 
 void UnitRenderer::PlayRender() {
@@ -109,6 +113,10 @@ void UnitRenderer::PlayRender() {
             break;
         }
     }
+}
+
+olc::Sprite* UnitRenderer::GetSprite() {
+    return units;
 }
 
 void UnitRenderer::Clear() {
