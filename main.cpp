@@ -25,6 +25,7 @@ public:
         level_size = { ScreenWidth() / pixel_size, ScreenHeight() / pixel_size };
         unit_mgr = UnitManager(level_size, pixel_size);
         unit_renderer = UnitRenderer(level_size, &unit_mgr, this);
+        gui = GUI(ScreenWidth(), ScreenHeight());
 
         gui.SetSpriteSheet(unit_renderer.GetSprite());
 
@@ -52,6 +53,7 @@ public:
         // Logic
         gui.Logic(this);
         unit_mgr.Logic(gui.GetSelectedIndex(), dt);
+        unit_mgr.GetColor(gui.GetColorFromSlider());
 
         // Render
         Clear(olc::BLACK);
