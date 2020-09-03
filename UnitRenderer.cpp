@@ -47,69 +47,83 @@ void UnitRenderer::PreviewRender() {
 
     for (int i = 0; i < level_size.y; i++) {
         for (int j = 0; j < level_size.x; j++) {
+
+            olc::Pixel color = unit_mgr->GetColor(j, i);
+
             switch (unit_mgr->GetUnit(j, i)) {
             case '0':
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::GREEN);
-                pge->DrawPartialSprite(j * psize, i * psize, units, 0, 0, psize, psize);
+                //pge->DrawPartialSprite(j * psize, i * psize, units, 0, 0, psize, psize);
+                pge->DrawPartialDecal({ j * (float)psize, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { 0.0f, 0.0f }, { (float)psize, (float)psize }, color);
                 break;
             case '1':
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::GREY);
-                pge->DrawPartialSprite(j * psize, i * psize, units, psize, 0, psize, psize);
+                //pge->DrawPartialSprite(j * psize, i * psize, units, psize, 0, psize, psize);
+                pge->DrawPartialDecal({ j * (float)psize, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
                 break;
             case '2':
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::CYAN);
-                pge->DrawPartialSprite(j * psize, i * psize, units, 2 * psize, 0, psize, psize);
+                //pge->DrawPartialSprite(j * psize, i * psize, units, 2 * psize, 0, psize, psize);
+                pge->DrawPartialDecal({ j * (float)psize, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { 2 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
                 break;
             case '3':
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::YELLOW);
-                pge->DrawPartialSprite(j * psize, i * psize, units, 3 * psize, 0, psize, psize);
+                //pge->DrawPartialSprite(j * psize, i * psize, units, 3 * psize, 0, psize, psize);
+                pge->DrawPartialDecal({ j * (float)psize, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { 3 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
                 break;
             case '4':
                 //pge->FillRect(j * psize, i * psize, psize, psize, olc::BLUE);
-                pge->DrawPartialSprite(j * psize, i * psize, units, 4 * psize, 0, psize, psize);
+                //pge->DrawPartialSprite(j * psize, i * psize, units, 4 * psize, 0, psize, psize);
+                pge->DrawPartialDecal({ j * (float)psize, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { 4 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
                 break;
             case '5':
-                pge->DrawPartialSprite(j * psize, i * psize, units, 5 * psize, 0, psize, psize);
-                break;
-            case '.':
-                continue;
-                //pge->FillRect(j * psize, i * psize, psize, psize, olc::BLACK);
+                //pge->DrawPartialSprite(j * psize, i * psize, units, 5 * psize, 0, psize, psize);
+                pge->DrawPartialDecal({ j * (float)psize, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { 5 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
                 break;
             }
         }
     }
 
-    //pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
-    //pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
-    for (int i = 0; i < n_units; i++) {
-        pge->DrawPartialSprite(1, i * psize + 1, units, i * psize, 0, psize, psize);
-    }
+    ////pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
+    ////pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
+    //for (int i = 0; i < n_units; i++) {
+    //    //pge->DrawPartialSprite(1, i * psize + 1, units, i * psize, 0, psize, psize);
+    //    pge->DrawPartialDecal({ 1.0f, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { i * (float)psize, 0.0f }, { (float)psize, (float)psize });
+    //}
 }
 
 void UnitRenderer::PlayRender() {
     angle += 0.01f;
 
-    for (auto& a : unit_mgr->GetUnits()) {
+    for (const auto& a : unit_mgr->GetUnits()) {
+
+        olc::Pixel color = a->color;
+        auto [x, y] = a->pos;
+
         switch (a->id) {
         case 0:
-            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 0, 0, psize, psize);
+            //pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 0, 0, psize, psize);
+            pge->DrawPartialDecal({ x, y }, { (float)psize, (float)psize }, units_decal, { 0.0f, 0.0f }, { (float)psize, (float)psize }, color);
             break;
         case 1:
             //FillRotateRect(model, angle, a->pos + olc::vf2d(5.0f, 0.0f), { -psize / 2.0f, -psize / 2.0f }, a->color);
-            pge->DrawPartialRotatedDecal(olc::vf2d(a->pos.x + psize / 2.0f, a->pos.y), units_decal, angle, { psize / 2.0f, psize / 2.0f }, { (float)psize, 0.0f }, { (float)psize, (float)psize });
+            pge->DrawPartialRotatedDecal(olc::vf2d(x + psize / 2.0f, y), units_decal, angle, { psize / 2.0f, psize / 2.0f }, { (float)psize, 0.0f }, { (float)psize, (float)psize }, { 1.0f, 1.0f }, color);
             break;
         case 2:
-            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 2 * psize, 0, psize, psize);
+            //pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 2 * psize, 0, psize, psize);
+            pge->DrawPartialDecal({ x, y }, { (float)psize, (float)psize }, units_decal, { 2 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
             break;
         case 3:
-            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 3 * psize, 0, psize, psize);
+            pge->DrawPartialDecal({ x, y }, { (float)psize, (float)psize }, units_decal, { 3 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
             break;
         case 4:
             //pge->FillRect(a->pos, a->size, a->color);
-            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 4 * psize, 0, psize, psize);
+            //pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 4 * psize, 0, psize, psize);
+            pge->DrawPartialDecal({ x, y }, { (float)psize, (float)psize }, units_decal, { 4 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
             break;
         case 5:
-            pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 5 * psize, 0, psize, psize);
+            //pge->DrawPartialSprite(a->pos.x, a->pos.y, units, 5 * psize, 0, psize, psize);
+            pge->DrawPartialDecal({ x, y }, { (float)psize, (float)psize }, units_decal, { 5 * (float)psize, 0.0f }, { (float)psize, (float)psize }, color);
             break;
         }
     }

@@ -71,15 +71,15 @@ void SpriteButton::GetSpriteSheet(olc::Sprite* sprite) {
 	sprite_sheet = sprite;
 }
 
-void SpriteButton::Render(int index, olc::PixelGameEngine* pge) {
+void SpriteButton::Render(int index, olc::PixelGameEngine* pge, int index_y) {
 	
 	if (sprite_sheet == nullptr) return;
 
 	// Drawing the sprite
-	pge->DrawPartialSprite(pos, sprite_sheet, { index * size.x, 0 }, { size.x, size.y });
+	pge->DrawPartialSprite({ pos.x + 1, pos.y }, sprite_sheet, { index * size.x, index_y * size.y }, { size.x, size.y });
 
 	// Drawing the front shade
 	pge->SetPixelMode(olc::Pixel::ALPHA);
-	pge->FillRect(pos, size, front_shade);
+	pge->FillRectDecal({ (float)pos.x + 1, (float)pos.y }, size, front_shade);
 	pge->SetPixelMode(olc::Pixel::NORMAL);
 }

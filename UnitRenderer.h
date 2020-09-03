@@ -14,8 +14,6 @@ private:
     olc::Sprite* units = nullptr;
     olc::Decal* units_decal = nullptr;
 
-    olc::Pixel colors[5] = { olc::GREEN, olc::WHITE, olc::CYAN, olc::YELLOW, olc::BLUE };
-
     olc::PixelGameEngine* pge;
     UnitManager* unit_mgr;
     olc::vi2d level_size;
