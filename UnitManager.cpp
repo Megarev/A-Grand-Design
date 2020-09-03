@@ -37,6 +37,9 @@ UnitManager::UnitManager(const olc::vi2d& size, int psize)
 
     p_system = std::make_unique<CircleParticleSystem>();
 	level.resize(level_size.x * level_size.y, '.');
+    colors.resize(level_size.x * level_size.y, olc::WHITE);
+
+    current_color = olc::WHITE;
 
     n_units = 5;
     n_selected_unit = 0;
@@ -48,12 +51,12 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
     if (pge->GetMouse(0).bHeld) {
         if (index.x > 0 && index.y > 0 && index.x < level_size.x - 1 && index.y < level_size.y - 1) {
             switch (n_selected_unit) {
-            case Static: SetUnit(index.x, index.y, '0'); break;
-            case Kinematic: SetUnit(index.x, index.y, '1'); break;
-            case Rotator: SetUnit(index.x, index.y, '2'); break;
-            case Wall: SetUnit(index.x, index.y, '3'); break;
-            case Gravity: SetUnit(index.x, index.y, '4'); break;
-            case Generator: SetUnit(index.x, index.y, '5'); break;
+            case Static:    SetUnit(index.x, index.y, '0'); colors[index.y * level_size.x + index.x] = current_color; break;
+            case Kinematic: SetUnit(index.x, index.y, '1'); colors[index.y * level_size.x + index.x] = current_color; break;
+            case Rotator:   SetUnit(index.x, index.y, '2'); colors[index.y * level_size.x + index.x] = current_color; break;
+            case Wall:      SetUnit(index.x, index.y, '3'); colors[index.y * level_size.x + index.x] = current_color; break;
+            case Gravity:   SetUnit(index.x, index.y, '4'); colors[index.y * level_size.x + index.x] = current_color; break;
+            case Generator: SetUnit(index.x, index.y, '5'); colors[index.y * level_size.x + index.x] = current_color; break;
             }
         }
     }
@@ -96,6 +99,10 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
             it++;
         }
     }
+
+   /* if (pge->GetMouse(2).bPressed || pge->GetKey(olc::R).bPressed) {
+        current_color = olc::Pixel(rand() % 256, rand() % 256, rand() % 256);
+    }*/
 
     if (pge->GetMouse(1).bHeld) {
         SetUnit(index.x, index.y, '.');
@@ -183,6 +190,18 @@ void UnitManager::Logic(int unit, float dt) {
     }
 }
 
+olc::Pixel UnitManager::GetColor(int x, int y) const {
+    if (x > 0 && y > 0 && x < level_size.x - 1 && y < level_size.y - 1) {
+        return colors[y * level_size.x + x];
+    }
+
+    return olc::BLANK;
+}
+
+void UnitManager::GetColor(const olc::Pixel& color) {
+    current_color = color;
+}
+
 void UnitManager::InitializeUnits() {
 
     for (int y = 1; y < level_size.y - 1; y++) {
@@ -191,36 +210,42 @@ void UnitManager::InitializeUnits() {
             case '0': {
                 StaticUnit* s = new StaticUnit;
                 s->Initialize(Static, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0.1f, 0 }, false, { x, y });
+                s->color = GetColor(x, y);
                 units.push_back(s);
                 break;
                 }
             case '1': {
                 KinematicUnit* k = new KinematicUnit;
                 k->Initialize(Kinematic, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0.1f, 0 }, true, { x, y });
+                k->color = GetColor(x, y);
                 units.push_back(k);
                 break;
                 }
             case '2': {
                 RotatorUnit* r = new RotatorUnit;
                 r->Initialize(Rotator, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0, 0 }, false, { x, y });
+                r->color = GetColor(x, y);
                 units.push_back(r);
                 break;
                 }
             case '3': {
                 WallUnit* w = new WallUnit;
                 w->Initialize(Wall, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0, 0 }, false, { x, y });
+                w->color = GetColor(x, y);
                 units.push_back(w);
                 break;
                 }
             case '4': {
                 GravityUnit* g = new GravityUnit;
                 g->Initialize(Gravity, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0.1f, 0 }, false, { x, y });
+                g->color = GetColor(x, y);
                 units.push_back(g);
                 }
                 break;
             case '5': {
                 GeneratorUnit* u = new GeneratorUnit;
                 u->Initialize(Generator, { x * (float)pixel_size, y * (float)pixel_size }, { pixel_size, pixel_size }, { 0, 0 }, true, { x, y });
+                u->color = GetColor(x, y);
                 units.push_back(u);
                 }
                 break;
@@ -368,3 +393,10 @@ int UnitManager::GetSelectedIndex() const {
 
 std::vector<Unit*> UnitManager::GetUnits() const { return units; }
 std::string UnitManager::GetLevel() const { return level; }
+
+olc::Pixel UnitManager::GetCurrentColor() const { return current_color; }
+void UnitManager::SetColor(const olc::Pixel& color) { current_color = color; }
+
+std::vector<olc::Pixel> UnitManager::GetUnitColors() const {
+    return colors;
+}
