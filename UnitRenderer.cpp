@@ -84,12 +84,12 @@ void UnitRenderer::PreviewRender() {
         }
     }
 
-    //pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
-    //pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
-    for (int i = 0; i < n_units; i++) {
-        //pge->DrawPartialSprite(1, i * psize + 1, units, i * psize, 0, psize, psize);
-        pge->DrawPartialDecal({ 1.0f, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { i * (float)psize, 0.0f }, { (float)psize, (float)psize });
-    }
+    ////pge->FillRect(0, 0, psize, psize, colors[unit_mgr->GetSelectedIndex()]);
+    ////pge->DrawPartialSprite(0, 0, units, unit_mgr->GetSelectedIndex() * psize, 0, psize, psize);
+    //for (int i = 0; i < n_units; i++) {
+    //    //pge->DrawPartialSprite(1, i * psize + 1, units, i * psize, 0, psize, psize);
+    //    pge->DrawPartialDecal({ 1.0f, i * (float)psize }, { (float)psize, (float)psize }, units_decal, { i * (float)psize, 0.0f }, { (float)psize, (float)psize });
+    //}
 }
 
 void UnitRenderer::PlayRender() {

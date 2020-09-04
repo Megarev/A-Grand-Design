@@ -100,10 +100,6 @@ void UnitManager::Input(olc::PixelGameEngine* pge, const olc::vi2d& mouse_pos) {
         }
     }
 
-   /* if (pge->GetMouse(2).bPressed || pge->GetKey(olc::R).bPressed) {
-        current_color = olc::Pixel(rand() % 256, rand() % 256, rand() % 256);
-    }*/
-
     if (pge->GetMouse(1).bHeld) {
         SetUnit(index.x, index.y, '.');
     }
@@ -163,12 +159,19 @@ void UnitManager::Logic(int unit, float dt) {
             if ((*it)->is_generate) {
                 if (GetUnitAtIndex((*it)->unit_index.x, (*it)->unit_index.y - 1) == nullptr) {
                     Unit* u = GetUnitAtIndex((*it)->unit_index.x, (*it)->unit_index.y + 1);
-                    if (u != nullptr && u->id == Static) {
-                        Unit* u_cpy = new StaticUnit;
-                        u_cpy->Initialize(Static, { u->pos.x, u->pos.y - 2 * pixel_size }, { pixel_size, pixel_size }, { 0.0f, 0.0f }, true, { u->unit_index.x, u->unit_index.y - 2 });
+                    if (u != nullptr) {
+                        Unit* u_cpy = nullptr;
+                        switch (u->id) {
+                        case Static: u_cpy = new StaticUnit; break;
+                        case Kinematic: u_cpy = new KinematicUnit; break;
+                        }
+                        if (u_cpy != nullptr) {
+                            u_cpy->Initialize(u->id, { u->pos.x, u->pos.y - 2 * pixel_size }, { pixel_size, pixel_size }, { u->id == Kinematic ? 0.1f : 0.0f, 0.0f }, true, { u->unit_index.x, u->unit_index.y - 2 });
+                            u_cpy->color = u->color;
 
-                        (*it)->is_generate = false;
-                        units_generated.push_back(u_cpy);
+                            (*it)->is_generate = false;
+                            units_generated.push_back(u_cpy);
+                        }
                     }
                 }
             }
@@ -357,6 +360,11 @@ void UnitManager::Clear() {
         delete a;
     }
     units.clear();
+}
+
+void UnitManager::ClearLevel() {
+    level.clear();
+    level.resize(level_size.x * level_size.y, '.');
 }
 
 char UnitManager::GetUnit(int x, int y) const {
